@@ -55,6 +55,7 @@ class TestSource {
     real_ts_start_ = real_ts_start;
     spdlog::info("starting SourceThread");
     thread_.reset(new std::thread(std::bind(&TestSource::threadLoop, this)));
+	return true;
   }
   bool Stop() {
     spdlog::info("stopping SourceThread");
@@ -62,7 +63,7 @@ class TestSource {
       running_ = false;
       thread_->join();
     }
-
+	return true;
   }
 
   void WaitForFinish() {
