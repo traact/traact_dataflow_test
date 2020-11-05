@@ -1,6 +1,6 @@
 /*  BSD 3-Clause License
  *
- *  Copyright (c) 2020, FriederPankratz <frieder.pankratz@gmail.com>
+ *  Copyright (c) 2020, Frieder Pankratz <frieder.pankratz@gmail.com>
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -28,40 +28,45 @@
  *  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **/
-#include <iostream>
 
-#include <traact/traact.h>
+#ifndef TRAACTMULTI_BASICTESTCASE_H
+#define TRAACTMULTI_BASICTESTCASE_H
 
+#include "../BaseProblem.h"
 
-#include <spdlog/sinks/stdout_color_sinks.h>
-#include <traact/TraactProblemSolver.h>
-#include <source/ProblemTester.h>
+namespace traact::test {
 
+    class BasicTestCase {
+    public:
+        typedef typename std::shared_ptr<BasicTestCase> Ptr;
 
-int main(int argc, char **argv) {
+        BasicTestCase(Problem problem, bool simulate_sensors);
 
-  using namespace traact::facade;
-  using namespace traact;
-  using namespace traact::dataflow;
-  using namespace traact::test;
-  //
-  try {
-    auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-    console_sink->set_level(spdlog::level::trace);
-    console_sink->set_pattern("[%^%l%$] %v");
+        virtual ~BasicTestCase() = default;
 
-  }
-  catch (const spdlog::spdlog_ex &ex) {
-    std::cout << "Log initialization failed: " << ex.what() << std::endl;
-  }
+        virtual std::vector<SourceConfiguration> GetSourceConfigurations();
 
-  std::shared_ptr<TraactProblemSolver> solver = std::make_shared<TraactProblemSolver>();
-  ProblemTester tester(solver);
+        Problem GetProblem() {
+            return problem_;
+        }
 
-  tester.test();
+        const ProblemConfiguration& GetProblemConfiguration() {
+            return problem_configuration_;
+        }
 
+        const std::vector<std::tuple<TimestampType,bool, Eigen::Affine3d> >& GetExpectedResults() {
+            return expected_results_;
+        }
 
-  spdlog::info("exit program");
+    protected:
+        bool simulate_sensors_;
+        Problem problem_;
+        ProblemConfiguration problem_configuration_;
+        std::vector<SourceConfiguration> source_configurations_;
+        std::vector<std::tuple<TimestampType,bool, Eigen::Affine3d> > expected_results_;
 
-  return 0;
+    };
+
 }
+
+#endif //TRAACTMULTI_BASICTESTCASE_H

@@ -19,21 +19,20 @@ class Traact(ConanFile):
     compiler = "cppstd"
     options = {
         "shared": [True, False],
-        "with_tests": [True, False]
     }
 
     default_options = {
         "shared": True,
-        "with_tests": True
     }
 
-    exports_sources = "CMakeLists.txt", "src/"
+    exports_sources = "CMakeLists.txt", "src/", "tests/"
 
     def requirements(self):        
         self.requires("traact_run_env/%s@camposs/stable" % self.version)
         self.requires("traact_core/%s@camposs/stable" % self.version)
         self.requires("traact_facade/%s@camposs/stable" % self.version)
         self.requires("traact_spatial/%s@camposs/stable" % self.version)
+        self.requires("gtest/1.10.0")
 
 
     def configure(self):

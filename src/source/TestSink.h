@@ -44,7 +44,7 @@ class TestSink {
   }
   void recieveInput(TimestampType ts,const Eigen::Affine3d & data){
 
-    data_.emplace_back(std::make_tuple(ts, data, now()));
+    data_.emplace_back(ts, data, now());
     //++progressDisplay;
   }
 

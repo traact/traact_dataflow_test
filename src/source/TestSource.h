@@ -34,6 +34,8 @@
 
 #include <traact/component/facade/ApplicationAsyncSource.h>
 #include <traact/spatial.h>
+
+#include <utility>
 #include "BaseProblem.h"
 
 namespace traact::test {
@@ -44,8 +46,7 @@ namespace traact::test {
 class TestSource {
  public:
   typedef typename std::function<void(TimestampType, Eigen::Affine3d)> Callback;
-  explicit TestSource(const SourceConfiguration& config) : source_configuration_(config)  {
-    internal_data_.setIdentity();
+  explicit TestSource(SourceConfiguration  config) : source_configuration_(config), expected_source_(config)  {
     running_ = false;
     callback_ = nullptr;
   }
@@ -78,47 +79,13 @@ class TestSource {
   }
  private:
   SourceConfiguration source_configuration_;
-  Eigen::Affine3d internal_data_;
+  ExpectedSource expected_source_;
   std::shared_ptr<std::thread> thread_;
   bool running_;
   Callback callback_;
   TimestampType real_ts_start_;
 
-  void threadLoop() {
-    using namespace traact::spatial;
-    using namespace traact;
-
-    // init runtime parameter
-    data_.reserve(source_configuration_.num_events);
-    size_t output_count = 0;
-    TimestampType ts = source_configuration_.start_time;
-    internal_data_ = source_configuration_.movement;
-
-    TimestampType next_real_ts = real_ts_start_;
-    TimestampType current_real_ts = now();
-
-
-    while (running_ && output_count < source_configuration_.num_events) {
-      if(source_configuration_.sleep) {
-        while(next_real_ts > current_real_ts){
-          current_real_ts = now();
-        }
-      }
-
-
-      data_.emplace_back(std::make_pair(ts, now()));
-      callback_(ts, internal_data_);
-
-      internal_data_ = internal_data_ * source_configuration_.movement;
-
-      ts = ts + source_configuration_.time_delta;
-      next_real_ts = next_real_ts + source_configuration_.getTimeDelayForIndex(output_count);
-      output_count++;
-
-    }
-    spdlog::trace("source quit loop");
-    running_ = false;
-  }
+  void threadLoop();
 
 };
 

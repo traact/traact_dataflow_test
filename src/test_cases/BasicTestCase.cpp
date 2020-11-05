@@ -29,45 +29,10 @@
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **/
 
-#include "TestSource.h"
+#include "BasicTestCase.h"
 
-void traact::test::TestSource::threadLoop() {
-    using namespace traact::spatial;
-    using namespace traact;
+traact::test::BasicTestCase::BasicTestCase(traact::test::Problem problem, bool simulate_sensors) : problem_(problem), simulate_sensors_(simulate_sensors) {}
 
-    // init runtime parameter
-    data_.reserve(source_configuration_.num_events);
-    size_t output_count = 0;
-
-
-    TimestampType next_real_ts = real_ts_start_;
-    TimestampType current_real_ts = now();
-
-
-    while (running_ && output_count < source_configuration_.num_events) {
-        if(source_configuration_.sleep) {
-
-            while(next_real_ts > current_real_ts){
-                std::chrono::milliseconds time_diff = std::chrono::duration_cast<std::chrono::milliseconds>(next_real_ts - current_real_ts);
-                if(time_diff.count() > 1) {
-                    std::this_thread::sleep_for( time_diff - std::chrono::milliseconds(1));
-                } else {
-                    std::this_thread::yield();
-                    current_real_ts = now();
-                }
-
-            }
-        }
-
-
-        TimestampType ts = expected_source_.timestamps[output_count];
-        data_.emplace_back(std::make_pair(ts, now()));
-        callback_(ts, expected_source_.getPose(ts));
-
-        next_real_ts = next_real_ts + source_configuration_.getTimeDelayForIndex(output_count);
-        output_count++;
-
-    }
-    spdlog::trace("source quit loop");
-    running_ = false;
+std::vector<traact::test::SourceConfiguration> traact::test::BasicTestCase::GetSourceConfigurations() {
+    return source_configurations_;
 }

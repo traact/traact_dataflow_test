@@ -30,7 +30,10 @@
 **/
 
 #include "TraactProblemSolver.h"
-void traact::test::TraactProblemSolver::prepareProblem(traact::test::Problem problem) {
+#include "../../src_traact_plugin/TraactDataflowTestPlugin.h"
+
+void
+traact::test::TraactProblemSolver::prepareProblem(Problem problem, const ProblemConfiguration &problem_configuration) {
   facade_ = std::make_shared<facade::Facade>();
   sink_.reset();
   sources_.clear();
@@ -43,7 +46,6 @@ void traact::test::TraactProblemSolver::prepareProblem(traact::test::Problem pro
           pattern_graph_ptr_->addPattern("source", facade_->instantiatePattern("ApplicationAsyncSource_Eigen::Affine3d"));
       DefaultPatternInstancePtr
           sink_pattern =
-          //pattern_graph_ptr->addPattern("sink", myfacade.instantiatePattern("Pose6DPrint"));
           pattern_graph_ptr_->addPattern("sink", facade_->instantiatePattern("ApplicationSyncSink_Eigen::Affine3d"));
 
       pattern_graph_ptr_->connect("source", "output", "sink", "input");
@@ -70,7 +72,7 @@ void traact::test::TraactProblemSolver::prepareProblem(traact::test::Problem pro
           pattern_graph_ptr_->addPattern("sink", facade_->instantiatePattern("ApplicationSyncSink_Eigen::Affine3d"));
       DefaultPatternInstancePtr
           mul_pattern =
-          pattern_graph_ptr_->addPattern("mul", facade_->instantiatePattern("MultiplicationComponent"));
+          pattern_graph_ptr_->addPattern("mul", facade_->instantiatePattern("DataflowTestComponent"));
 
       pattern_graph_ptr_->connect("source", "output", "mul", "input0");
       pattern_graph_ptr_->connect("source2", "output", "mul", "input1");
@@ -85,8 +87,130 @@ void traact::test::TraactProblemSolver::prepareProblem(traact::test::Problem pro
 
       DefaultComponentPtr sink = facade_->getComponent("sink");
       sink_ = std::dynamic_pointer_cast<traact::component::facade::ApplicationSyncSink<spatial::Pose6DHeader> >(sink);
+
+        std::shared_ptr<test::DataflowTestComponent>
+                mul_pattern_tmp = std::dynamic_pointer_cast<test::DataflowTestComponent>(facade_->getComponent("mul"));
+
+        mul_pattern_tmp->base_problem_.problem_configuration_ = problem_configuration;
       break;
     }
+      case Problem ::Input1_Input2__Input3:{
+          DefaultPatternInstancePtr
+                  source_pattern =
+                  pattern_graph_ptr_->addPattern("source", facade_->instantiatePattern("ApplicationAsyncSource_Eigen::Affine3d"));
+          DefaultPatternInstancePtr
+                  source2_pattern =
+                  pattern_graph_ptr_->addPattern("source2", facade_->instantiatePattern("ApplicationAsyncSource_Eigen::Affine3d"));
+          DefaultPatternInstancePtr
+                  source3_pattern =
+                  pattern_graph_ptr_->addPattern("source3", facade_->instantiatePattern("ApplicationAsyncSource_Eigen::Affine3d"));
+          DefaultPatternInstancePtr
+                  sink_pattern =
+                  pattern_graph_ptr_->addPattern("sink", facade_->instantiatePattern("ApplicationSyncSink_Eigen::Affine3d"));
+          DefaultPatternInstancePtr
+                  mul_pattern =
+                  pattern_graph_ptr_->addPattern("mul1", facade_->instantiatePattern("DataflowTestComponent"));
+          DefaultPatternInstancePtr
+                  mul_pattern2 =
+                  pattern_graph_ptr_->addPattern("mul2", facade_->instantiatePattern("DataflowTestComponent"));
+
+
+          pattern_graph_ptr_->connect("source", "output", "mul1", "input0");
+          pattern_graph_ptr_->connect("source2", "output", "mul1", "input1");
+          pattern_graph_ptr_->connect("mul1", "output", "mul2", "input0");
+          pattern_graph_ptr_->connect("source3", "output", "mul2", "input1");
+          pattern_graph_ptr_->connect("mul2", "output", "sink", "input");
+
+
+          facade_->loadDataflow(pattern_graph_ptr_);
+
+          DefaultComponentPtr source = facade_->getComponent("source");
+          auto app_source = std::dynamic_pointer_cast<SourceType >(source);
+          sources_.emplace_back(app_source);
+          sources_.emplace_back(std::dynamic_pointer_cast<SourceType >(facade_->getComponent("source2")));
+          sources_.emplace_back(std::dynamic_pointer_cast<SourceType >(facade_->getComponent("source3")));
+
+          DefaultComponentPtr sink = facade_->getComponent("sink");
+          sink_ = std::dynamic_pointer_cast<traact::component::facade::ApplicationSyncSink<spatial::Pose6DHeader> >(sink);
+
+
+          std::shared_ptr<test::DataflowTestComponent>
+                  mul_pattern_tmp = std::dynamic_pointer_cast<test::DataflowTestComponent>(facade_->getComponent("mul1"));
+
+          mul_pattern_tmp->base_problem_.problem_configuration_ = problem_configuration;
+
+          std::shared_ptr<test::DataflowTestComponent>
+                  mul_pattern2_tmp = std::dynamic_pointer_cast<test::DataflowTestComponent>(facade_->getComponent("mul2"));
+
+          mul_pattern2_tmp->base_problem_.problem_configuration_ = problem_configuration;
+          break;
+      }
+
+      case Problem ::Input1_Input2__Input3_Input4:{
+          DefaultPatternInstancePtr
+                  source_pattern =
+                  pattern_graph_ptr_->addPattern("source", facade_->instantiatePattern("ApplicationAsyncSource_Eigen::Affine3d"));
+          DefaultPatternInstancePtr
+                  source2_pattern =
+                  pattern_graph_ptr_->addPattern("source2", facade_->instantiatePattern("ApplicationAsyncSource_Eigen::Affine3d"));
+          DefaultPatternInstancePtr
+                  source3_pattern =
+                  pattern_graph_ptr_->addPattern("source3", facade_->instantiatePattern("ApplicationAsyncSource_Eigen::Affine3d"));
+          DefaultPatternInstancePtr
+                  source4_pattern =
+                  pattern_graph_ptr_->addPattern("source4", facade_->instantiatePattern("ApplicationAsyncSource_Eigen::Affine3d"));
+          DefaultPatternInstancePtr
+                  sink_pattern =
+                  pattern_graph_ptr_->addPattern("sink", facade_->instantiatePattern("ApplicationSyncSink_Eigen::Affine3d"));
+          DefaultPatternInstancePtr
+                  mul_pattern =
+                  pattern_graph_ptr_->addPattern("mul1", facade_->instantiatePattern("DataflowTestComponent"));
+          DefaultPatternInstancePtr
+                  mul_pattern2 =
+                  pattern_graph_ptr_->addPattern("mul2", facade_->instantiatePattern("DataflowTestComponent"));
+          DefaultPatternInstancePtr
+                  mul_pattern3 =
+                  pattern_graph_ptr_->addPattern("mul3", facade_->instantiatePattern("DataflowTestComponent"));
+
+          pattern_graph_ptr_->connect("source", "output", "mul1", "input0");
+          pattern_graph_ptr_->connect("source2", "output", "mul1", "input1");
+          pattern_graph_ptr_->connect("mul1", "output", "mul3", "input0");
+          pattern_graph_ptr_->connect("source3", "output", "mul2", "input0");
+          pattern_graph_ptr_->connect("source4", "output", "mul2", "input1");
+          pattern_graph_ptr_->connect("mul1", "output", "mul3", "input0");
+          pattern_graph_ptr_->connect("mul2", "output", "mul3", "input1");
+          pattern_graph_ptr_->connect("mul3", "output", "sink", "input");
+
+
+          facade_->loadDataflow(pattern_graph_ptr_);
+
+          DefaultComponentPtr source = facade_->getComponent("source");
+          auto app_source = std::dynamic_pointer_cast<SourceType >(source);
+          sources_.emplace_back(app_source);
+          sources_.emplace_back(std::dynamic_pointer_cast<SourceType >(facade_->getComponent("source2")));
+          sources_.emplace_back(std::dynamic_pointer_cast<SourceType >(facade_->getComponent("source3")));
+          sources_.emplace_back(std::dynamic_pointer_cast<SourceType >(facade_->getComponent("source4")));
+
+          DefaultComponentPtr sink = facade_->getComponent("sink");
+          sink_ = std::dynamic_pointer_cast<traact::component::facade::ApplicationSyncSink<spatial::Pose6DHeader> >(sink);
+
+
+          std::shared_ptr<test::DataflowTestComponent>
+                  mul_pattern_tmp = std::dynamic_pointer_cast<test::DataflowTestComponent>(facade_->getComponent("mul1"));
+
+          mul_pattern_tmp->base_problem_.problem_configuration_ = problem_configuration;
+
+          std::shared_ptr<test::DataflowTestComponent>
+                  mul_pattern2_tmp = std::dynamic_pointer_cast<test::DataflowTestComponent>(facade_->getComponent("mul2"));
+
+          mul_pattern2_tmp->base_problem_.problem_configuration_ = problem_configuration;
+
+          std::shared_ptr<test::DataflowTestComponent>
+                  mul_pattern3_tmp = std::dynamic_pointer_cast<test::DataflowTestComponent>(facade_->getComponent("mul3"));
+
+          mul_pattern3_tmp->base_problem_.problem_configuration_ = problem_configuration;
+          break;
+      }
   }
 
 }

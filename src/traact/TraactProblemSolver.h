@@ -44,7 +44,7 @@ class TraactProblemSolver : public ProblemSolver{
   typedef typename traact::component::facade::ApplicationAsyncSource<spatial::Pose6DHeader> SourceType;
   typedef typename std::shared_ptr<component::facade::ApplicationSyncSink<spatial::Pose6DHeader> > SinkPtr;
   typedef typename std::shared_ptr<component::facade::ApplicationAsyncSource<spatial::Pose6DHeader> > SourcePtr;
-  void prepareProblem(Problem problem) override;
+  void prepareProblem(Problem problem, const ProblemConfiguration &problem_configuration) override;
 
   void setSinkCallback(const ProblemSolver::Callback &callback) override;
   void setSourceCallback(size_t index, TestSource *source) override;

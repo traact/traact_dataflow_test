@@ -47,7 +47,7 @@ endif()
 
 # public header
 set(DATAFLOW_TEST_SOURCES
-        src/DataflowTest.cpp
+        src/test_main.cpp
         src/source/TestSource.cpp
         src/source/TestSource.h
         src/source/TestSink.cpp
@@ -57,18 +57,20 @@ set(DATAFLOW_TEST_SOURCES
         src/source/ProblemTester.h
         src/source/ProblemSolver.h
         src/traact/TraactProblemSolver.cpp
-        src/traact/TraactProblemSolver.h)
+        src/traact/TraactProblemSolver.h src/test_cases/BasicTestCase.cpp src/test_cases/BasicTestCase.h src/test_cases/SyncSourceTestCase.cpp src/test_cases/SyncSourceTestCase.h src/test_cases/AsyncSourceTestCase.cpp src/test_cases/AsyncSourceTestCase.h src/test_sync_source.cpp src/test_async_source.cpp)
 
-add_executable(DataflowTest ${DATAFLOW_TEST_SOURCES})
+add_executable(dataflow_test ${DATAFLOW_TEST_SOURCES})
 
-conan_target_link_libraries(DataflowTest)
+conan_target_link_libraries(dataflow_test)
 
-target_include_directories(DataflowTest PRIVATE
+target_include_directories(dataflow_test PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src
         ${CMAKE_CURRENT_BINARY_DIR}
         )
 
-install(TARGETS DataflowTest
+install(TARGETS dataflow_test
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})  # This is for Windows
+
+add_subdirectory(src_traact_plugin)

@@ -37,43 +37,17 @@
 #include <BaseProblem.h>
 #include <traact/util/PerformanceMonitor.h>
 
-traact::test::ProblemTester::ProblemTester(const traact::test::ProblemSolver::Ptr &solver) : solver_(solver) {}
+traact::test::ProblemTester::ProblemTester(const traact::test::ProblemSolver::Ptr &solver,BasicTestCase::Ptr test_case) : solver_(solver), test_case_(test_case) {}
 
-void traact::test::ProblemTester::test() {
-
-    Problem current_problem;
-    current_problem = Problem::Input1_Input2;
-
-    std::vector<SourceConfiguration> source_configs;
-
-    SourceConfiguration source_configuration;
-    source_configuration.sleep = false;
-    source_configuration.num_events = 1000;
-    source_configuration.time_delta = std::chrono::nanoseconds(1);
-    source_configuration.delay_times.emplace_back(std::chrono::milliseconds(10));
-    source_configuration.movement = Eigen::Translation3d(0, 0, 1);
-    source_configuration.start_time = TimestampType::min();
-
-    switch (current_problem) {
-        case Problem::Input1_Input2__Input3_Input4: {
-            source_configs.emplace_back(source_configuration);
-        }
-        case Problem::Input1_Input2__Input3: {
-            source_configs.emplace_back(source_configuration);
-        }
-        case Problem::Input1_Input2: {
-            source_configs.emplace_back(source_configuration);
-        }
-        case Problem::Input1: {
-            source_configs.emplace_back(source_configuration);
-            break;
-        }
-    }
+bool traact::test::ProblemTester::test() {
 
 
-    ExpectedResult expected_result(current_problem, source_configs);
-    size_t expected_count = expected_result.expected_results.size();
-    solver_->prepareProblem(current_problem);
+    const std::vector<std::tuple<TimestampType,bool, Eigen::Affine3d> >& expected_results = test_case_->GetExpectedResults();
+
+    size_t expected_count = expected_results.size();
+    solver_->prepareProblem(test_case_->GetProblem(), test_case_->GetProblemConfiguration());
+
+    const std::vector<traact::test::SourceConfiguration>& source_configs = test_case_->GetSourceConfigurations();
 
     std::vector<std::shared_ptr<TestSource> > source_threads;
 
@@ -89,7 +63,7 @@ void traact::test::ProblemTester::test() {
     solver_->setSinkCallback(receiveCallback);
 
     TimestampType real_ts_source_start = now() + std::chrono::seconds(1);
-    util::PerformanceMonitor monitor("Problem: Input1");
+    util::PerformanceMonitor monitor("Problem: " + std::to_string((int)test_case_->GetProblem()));
     {
         MEASURE_TIME(monitor, 0, "network start")
         solver_->start();
@@ -116,7 +90,7 @@ void traact::test::ProblemTester::test() {
     spdlog::info(monitor.toString());
     const auto &received_results = test_sink.data_;
 
-    spdlog::info("received {0} of {1} results", received_results.size(), expected_result.expected_results.size());
+    spdlog::info("received {0} of {1} results", received_results.size(), expected_results.size());
 
     spdlog::info("check for order of received results");
     std::map<TimestampType, Eigen::Affine3d> timestamp_to_result;
@@ -150,22 +124,31 @@ void traact::test::ProblemTester::test() {
 
     spdlog::info("check for correct results");
     bool allOK = true;
-    for (const auto &expected : expected_result.expected_results) {
-        auto find_it = timestamp_to_result.find(expected.first);
-        if (find_it == timestamp_to_result.end()) {
-            spdlog::error("missing result for timestamp {0}", expected.first.time_since_epoch().count());
+    for (const auto &expected : expected_results) {
+        auto expected_ts = std::get<0>(expected);
+        auto expected_valid = std::get<1>(expected);
+        auto expected_value = std::get<2>(expected);
+        auto find_it = timestamp_to_result.find(expected_ts);
+        if (expected_valid && find_it == timestamp_to_result.end()) {
+            spdlog::error("missing result for timestamp {0}", expected_ts.time_since_epoch().count());
             allOK = false;
             continue;
         }
+        if (!expected_valid && find_it != timestamp_to_result.end()) {
+            spdlog::error("result for invalid timestamp {0} exists", expected_ts.time_since_epoch().count());
+            allOK = false;
+            continue;
+        }
+
         Eigen::Affine3d result = find_it->second;
-        if (!result.isApprox(expected.second)) {
+        if (!result.isApprox(expected_value)) {
             Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
             std::stringstream ss_expected, ss_result;
-            ss_expected << expected.second.matrix().format(CleanFmt);
+            ss_expected << expected_value.matrix().format(CleanFmt);
             ss_result << result.matrix().format(CleanFmt);
             allOK = false;
             spdlog::error("result differs for ts {2}, expected: \n {0} \n result:\n {1}", ss_expected.str(),
-                          ss_result.str(), expected.first.time_since_epoch().count());
+                          ss_result.str(), expected_ts.time_since_epoch().count());
         }
 
     }
@@ -187,6 +170,8 @@ void traact::test::ProblemTester::test() {
         using nanoToSeconds = std::chrono::duration<float>;
         spdlog::info("average delay: {0}ns", total_delay.count() / result_count);
     }
+
+    return allOK;
 
 
 }

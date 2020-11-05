@@ -42,7 +42,7 @@ class ProblemSolver {
   typedef typename std::function<void(TimestampType, Eigen::Affine3d)> Callback;
   virtual ~ProblemSolver() = default;
 
-  virtual void prepareProblem(Problem problem)=0;
+  virtual void prepareProblem(Problem problem, const ProblemConfiguration &problem_configuration) =0;
 
   virtual void setSinkCallback(const Callback& callback) = 0;
   virtual void setSourceCallback(size_t iundex, TestSource* source) = 0;

@@ -33,16 +33,18 @@
 #define TRAACTMULTI_TRAACT_DATAFLOW_TEST_SRC_SOURCE_PROBLEMTESTER_H_
 
 #include <source/ProblemSolver.h>
+#include "test_cases/BasicTestCase.h"
 
 namespace traact::test {
 class ProblemTester {
  public:
-  ProblemTester(const ProblemSolver::Ptr &solver);
+  ProblemTester(const ProblemSolver::Ptr &solver, BasicTestCase::Ptr test_case);
 
-  void test();
+  bool test();
 
  private:
     ProblemSolver::Ptr solver_;
+    BasicTestCase::Ptr test_case_;
 
 
 
