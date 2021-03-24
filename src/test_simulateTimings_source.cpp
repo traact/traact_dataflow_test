@@ -33,60 +33,101 @@
 #include <gtest/gtest.h>
 #include <traact/TraactProblemSolver.h>
 #include <source/ProblemTester.h>
-#include "test_cases/AsyncSourceTestCase.h"
+#include "test_cases/SyncSourceMissingEventsTestCase.h"
+#include "test_cases/SyncSourceTestCase.h"
 
-/* This test case in async source mode makes no sense as there is only one source
-TEST(TraactDataflowTestSuite, Async_Input1) {
+TEST(Sync_SimulateTimings, Sync_Input1) {
     using namespace traact::facade;
     using namespace traact;
     using namespace traact::dataflow;
     using namespace traact::test;
 
     std::shared_ptr<TraactProblemSolver> solver = std::make_shared<TraactProblemSolver>();
-    AsyncSourceTestCase::Ptr test_case = std::make_shared<AsyncSourceTestCase>(Problem::Input1, false);
-    ProblemTester tester(solver, test_case);
-
-    ASSERT_TRUE(tester.test());
-}*/
-
-
-
-TEST(TraactDataflowTestSuite, Async_Input1_Input2) {
-    using namespace traact::facade;
-    using namespace traact;
-    using namespace traact::dataflow;
-    using namespace traact::test;
-
-    std::shared_ptr<TraactProblemSolver> solver = std::make_shared<TraactProblemSolver>();
-    AsyncSourceTestCase::Ptr test_case = std::make_shared<AsyncSourceTestCase>(Problem::Input1_Input2, false);
+    SyncSourceTestCase::Ptr test_case = std::make_shared<SyncSourceTestCase>(Problem::Input1, true);
     ProblemTester tester(solver, test_case);
 
     ASSERT_TRUE(tester.test());
 }
 
-TEST(TraactDataflowTestSuite, Async_Input1_Input2__Input3) {
+
+
+TEST(Sync_SimulateTimings, Sync_Input1_Input2) {
     using namespace traact::facade;
     using namespace traact;
     using namespace traact::dataflow;
     using namespace traact::test;
 
     std::shared_ptr<TraactProblemSolver> solver = std::make_shared<TraactProblemSolver>();
-    AsyncSourceTestCase::Ptr test_case = std::make_shared<AsyncSourceTestCase>(Problem::Input1_Input2__Input3, false);
+    SyncSourceTestCase::Ptr test_case = std::make_shared<SyncSourceTestCase>(Problem::Input1_Input2, true);
     ProblemTester tester(solver, test_case);
-
 
     ASSERT_TRUE(tester.test());
 }
 
-TEST(TraactDataflowTestSuite, Async_Input1_Input2__Input3_Input4) {
+TEST(Sync_SimulateTimings, Sync_Input1_Input2__Input3) {
     using namespace traact::facade;
     using namespace traact;
     using namespace traact::dataflow;
     using namespace traact::test;
 
     std::shared_ptr<TraactProblemSolver> solver = std::make_shared<TraactProblemSolver>();
-    AsyncSourceTestCase::Ptr test_case = std::make_shared<AsyncSourceTestCase>(Problem::Input1_Input2__Input3_Input4, false);
+    SyncSourceTestCase::Ptr test_case = std::make_shared<SyncSourceTestCase>(Problem::Input1_Input2__Input3, true);
+    ProblemTester tester(solver, test_case);
+
+
+    ASSERT_TRUE(tester.test());
+}
+
+TEST(Sync_SimulateTimings, Sync_Input1_Input2__Input3_Input4) {
+    using namespace traact::facade;
+    using namespace traact;
+    using namespace traact::dataflow;
+    using namespace traact::test;
+
+    std::shared_ptr<TraactProblemSolver> solver = std::make_shared<TraactProblemSolver>();
+    SyncSourceTestCase::Ptr test_case = std::make_shared<SyncSourceTestCase>(Problem::Input1_Input2__Input3_Input4, true);
     ProblemTester tester(solver, test_case);
 
     ASSERT_TRUE(tester.test());
 }
+
+TEST(Sync_MissingEvents_SimulateTimings, Async_Sensor_Input1_Input2) {
+    using namespace traact::facade;
+    using namespace traact;
+    using namespace traact::dataflow;
+    using namespace traact::test;
+
+    std::shared_ptr<TraactProblemSolver> solver = std::make_shared<TraactProblemSolver>();
+    SyncSourceMissingEventsTestCase::Ptr test_case = std::make_shared<SyncSourceMissingEventsTestCase>(Problem::Input1_Input2, true);
+    ProblemTester tester(solver, test_case);
+
+    ASSERT_TRUE(tester.test());
+}
+
+TEST(Sync_MissingEvents_SimulateTimings, Async_Sensor_Input1_Input2__Input3) {
+    using namespace traact::facade;
+    using namespace traact;
+    using namespace traact::dataflow;
+    using namespace traact::test;
+
+    std::shared_ptr<TraactProblemSolver> solver = std::make_shared<TraactProblemSolver>();
+    SyncSourceMissingEventsTestCase::Ptr test_case = std::make_shared<SyncSourceMissingEventsTestCase>(Problem::Input1_Input2__Input3, true);
+    ProblemTester tester(solver, test_case);
+
+
+    ASSERT_TRUE(tester.test());
+}
+
+TEST(Sync_MissingEvents_SimulateTimings, Async_Sensor_Input1_Input2__Input3_Input4) {
+    using namespace traact::facade;
+    using namespace traact;
+    using namespace traact::dataflow;
+    using namespace traact::test;
+
+    std::shared_ptr<TraactProblemSolver> solver = std::make_shared<TraactProblemSolver>();
+    SyncSourceMissingEventsTestCase::Ptr test_case = std::make_shared<SyncSourceMissingEventsTestCase>(Problem::Input1_Input2__Input3_Input4, true);
+    ProblemTester tester(solver, test_case);
+
+    ASSERT_TRUE(tester.test());
+}
+

@@ -29,19 +29,19 @@
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **/
 
-#ifndef TRAACTMULTI_ASYNCSOURCETESTCASE_H
-#define TRAACTMULTI_ASYNCSOURCETESTCASE_H
+#ifndef TRAACTMULTI_SYNCSOURCEMISSINGEVENTSTESTCASE_H
+#define TRAACTMULTI_SYNCSOURCEMISSINGEVENTSTESTCASE_H
 
 #include "BasicTestCase.h"
 
 namespace traact::test {
 
-    class AsyncSourceTestCase : public BasicTestCase{
+    class SyncSourceMissingEventsTestCase : public BasicTestCase{
     public:
-        AsyncSourceTestCase(Problem problem, bool simulate_sensors);
+        SyncSourceMissingEventsTestCase(Problem problem, bool simulate_sensors);
 
 
     };
 }
 
-#endif //TRAACTMULTI_ASYNCSOURCETESTCASE_H
+#endif //TRAACTMULTI_SYNCSOURCEMISSINGEVENTSTESTCASE_H

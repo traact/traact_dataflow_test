@@ -29,24 +29,28 @@
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **/
 
-#include "AsyncSourceTestCase.h"
+#include "SyncSourceMissingEventsTestCase.h"
 
 
-traact::test::AsyncSourceTestCase::AsyncSourceTestCase(traact::test::Problem problem, bool simulate_sensors) : BasicTestCase(problem, simulate_sensors) {
+traact::test::SyncSourceMissingEventsTestCase::SyncSourceMissingEventsTestCase(traact::test::Problem problem, bool simulate_sensors) : BasicTestCase(problem, simulate_sensors) {
 
     TimestampType startTime(std::chrono::milliseconds(10));
     TimeDurationType deltaTime_0(std::chrono::milliseconds(10));
     TimeDurationType deltaTime_1(std::chrono::milliseconds(20));
     std::vector<TimeDurationType> delays;
-    size_t num_events = 1000;
-
-    problem_configuration_.sleep = false;
+    size_t num_events_0 = 1000;
+    size_t num_events_1 = 500;
+    if(!simulate_sensors){
+        num_events_0 = 10000;
+        num_events_1 = 5000;
+    }
+    problem_configuration_.sleep =false;
     //problem_configuration_.expected_input_time_delta = std::chrono::milliseconds (10);
     //problem_configuration_.time_delta.push_back(std::chrono::milliseconds (10));
 
 
-    delays.resize(num_events);
-    for(int i=0;i<num_events;++i){
+    delays.resize(num_events_0);
+    for(int i=0;i<num_events_0;++i){
         delays[i] = std::chrono::milliseconds(0);
     }
 
@@ -56,19 +60,29 @@ traact::test::AsyncSourceTestCase::AsyncSourceTestCase(traact::test::Problem pro
     switch (problem_) {
         case Problem::Input1_Input2__Input3_Input4:{
             Eigen::Affine3d movement_source;
-            source_configurations_.push_back(SourceConfiguration(simulate_sensors_, startTime,deltaTime_1, delays, num_events, sin_offset, sin_per_second  ));
+            source_configurations_.push_back(SourceConfiguration(simulate_sensors_, startTime,deltaTime_0, delays, num_events_0, sin_offset, sin_per_second  ));
+            source_configurations_.push_back(SourceConfiguration(simulate_sensors_, startTime,deltaTime_1, delays, num_events_1, sin_offset, sin_per_second  ));
+            source_configurations_.push_back(SourceConfiguration(simulate_sensors_, startTime,deltaTime_0, delays, num_events_0, sin_offset, sin_per_second  ));
+            source_configurations_.push_back(SourceConfiguration(simulate_sensors_, startTime,deltaTime_1, delays, num_events_1, sin_offset, sin_per_second  ));
+            break;
         }
         case Problem::Input1_Input2__Input3:{
             Eigen::Affine3d movement_source;
-            source_configurations_.push_back(SourceConfiguration(simulate_sensors_, startTime,deltaTime_0, delays, num_events, sin_offset, sin_per_second  ));
+            source_configurations_.push_back(SourceConfiguration(simulate_sensors_, startTime,deltaTime_0, delays, num_events_0, sin_offset, sin_per_second  ));
+            source_configurations_.push_back(SourceConfiguration(simulate_sensors_, startTime,deltaTime_1, delays, num_events_1, sin_offset, sin_per_second  ));
+            source_configurations_.push_back(SourceConfiguration(simulate_sensors_, startTime,deltaTime_0, delays, num_events_0, sin_offset, sin_per_second  ));
+            break;
         }
         case Problem::Input1_Input2:{
             Eigen::Affine3d movement_source;
-            source_configurations_.push_back(SourceConfiguration(simulate_sensors_, startTime,deltaTime_1, delays, num_events, sin_offset, sin_per_second  ));
+            source_configurations_.push_back(SourceConfiguration(simulate_sensors_, startTime,deltaTime_0, delays, num_events_0, sin_offset, sin_per_second  ));
+            source_configurations_.push_back(SourceConfiguration(simulate_sensors_, startTime,deltaTime_1, delays, num_events_1, sin_offset, sin_per_second  ));
+            break;
         }
         case Problem::Input1:{
             Eigen::Affine3d movement_source;
-            source_configurations_.push_back(SourceConfiguration(simulate_sensors_, startTime,deltaTime_0, delays, num_events, sin_offset, sin_per_second  ));
+            source_configurations_.push_back(SourceConfiguration(simulate_sensors_, startTime,deltaTime_0, delays, num_events_0, sin_offset, sin_per_second  ));
+            break;
 
         }
 
@@ -85,7 +99,7 @@ traact::test::AsyncSourceTestCase::AsyncSourceTestCase(traact::test::Problem pro
     all_timestamps.insert(all_timestamps.end(), all_timestamps_set.begin(),all_timestamps_set.end());
     std::sort(all_timestamps.begin(),all_timestamps.end());
 
-    if(all_timestamps.size() > num_events){
+    if(all_timestamps.size() > num_events_0){
         spdlog::error("more timestamps then events");
     }
 

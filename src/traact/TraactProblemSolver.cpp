@@ -31,11 +31,11 @@
 
 #include "TraactProblemSolver.h"
 #include "../../src_traact_plugin/TraactDataflowTestPlugin.h"
-
+#include <traact/util/Logging.h>
 void
 traact::test::TraactProblemSolver::prepareProblem(Problem problem, const ProblemConfiguration &problem_configuration) {
   facade_ = std::make_shared<facade::Facade>();
-  sink_.reset();
+  sink_.clear();
   sources_.clear();
 
   pattern_graph_ptr_ = std::make_shared<DefaultInstanceGraph>("test1");
@@ -50,14 +50,24 @@ traact::test::TraactProblemSolver::prepareProblem(Problem problem, const Problem
 
       pattern_graph_ptr_->connect("source", "output", "sink", "input");
 
+        buffer::TimeDomainManagerConfig td_config;
+        td_config.time_domain = 0;
+        td_config.ringbuffer_size = 30;
+        td_config.master_source = "source";
+        td_config.source_mode = SourceMode::WaitForBuffer;
+        td_config.missing_source_event_mode = MissingSourceEventMode::WaitForEvent;
+        td_config.max_offset = std::chrono::milliseconds(1);
+        td_config.max_delay = std::chrono::milliseconds(100);
+        td_config.measurement_delta = std::chrono::milliseconds(10);
+
+        pattern_graph_ptr_->timedomain_configs[0] = td_config;
+
       facade_->loadDataflow(pattern_graph_ptr_);
 
-      DefaultComponentPtr source = facade_->getComponent("source");
-      auto app_source = std::dynamic_pointer_cast<SourceType >(source);
-      sources_.emplace_back(app_source);
+        sources_.emplace_back(std::dynamic_pointer_cast<SourceType >(facade_->getComponent("source")));
 
       DefaultComponentPtr sink = facade_->getComponent("sink");
-      sink_ = std::dynamic_pointer_cast<traact::component::facade::ApplicationSyncSink<spatial::Pose6DHeader> >(sink);
+        sink_.emplace_back(std::dynamic_pointer_cast<traact::component::facade::ApplicationSyncSink<spatial::Pose6DHeader> >(sink));
       break;
     }
     case Problem ::Input1_Input2:{
@@ -78,15 +88,25 @@ traact::test::TraactProblemSolver::prepareProblem(Problem problem, const Problem
       pattern_graph_ptr_->connect("source2", "output", "mul", "input1");
       pattern_graph_ptr_->connect("mul", "output", "sink", "input");
 
+      buffer::TimeDomainManagerConfig td_config;
+      td_config.time_domain = 0;
+      td_config.ringbuffer_size = 30;
+      td_config.master_source = "source";
+      td_config.source_mode = SourceMode::WaitForBuffer;
+      td_config.missing_source_event_mode = MissingSourceEventMode::WaitForEvent;
+      td_config.max_offset = std::chrono::milliseconds(1);
+      td_config.max_delay = std::chrono::milliseconds(100);
+      td_config.measurement_delta = std::chrono::milliseconds(10);
+
+      pattern_graph_ptr_->timedomain_configs[0] = td_config;
+
       facade_->loadDataflow(pattern_graph_ptr_);
 
-      DefaultComponentPtr source = facade_->getComponent("source");
-      auto app_source = std::dynamic_pointer_cast<SourceType >(source);
-      sources_.emplace_back(app_source);
+        sources_.emplace_back(std::dynamic_pointer_cast<SourceType >(facade_->getComponent("source")));
       sources_.emplace_back(std::dynamic_pointer_cast<SourceType >(facade_->getComponent("source2")));
 
       DefaultComponentPtr sink = facade_->getComponent("sink");
-      sink_ = std::dynamic_pointer_cast<traact::component::facade::ApplicationSyncSink<spatial::Pose6DHeader> >(sink);
+        sink_.emplace_back(std::dynamic_pointer_cast<traact::component::facade::ApplicationSyncSink<spatial::Pose6DHeader> >(sink));
 
         std::shared_ptr<test::DataflowTestComponent>
                 mul_pattern_tmp = std::dynamic_pointer_cast<test::DataflowTestComponent>(facade_->getComponent("mul"));
@@ -121,17 +141,27 @@ traact::test::TraactProblemSolver::prepareProblem(Problem problem, const Problem
           pattern_graph_ptr_->connect("source3", "output", "mul2", "input1");
           pattern_graph_ptr_->connect("mul2", "output", "sink", "input");
 
+          buffer::TimeDomainManagerConfig td_config;
+          td_config.time_domain = 0;
+          td_config.ringbuffer_size = 30;
+          td_config.master_source = "source";
+          td_config.source_mode = SourceMode::WaitForBuffer;
+          td_config.missing_source_event_mode = MissingSourceEventMode::WaitForEvent;
+          td_config.max_offset = std::chrono::milliseconds(1);
+          td_config.max_delay = std::chrono::milliseconds(100);
+          td_config.measurement_delta = std::chrono::milliseconds(10);
+
+          pattern_graph_ptr_->timedomain_configs[0] = td_config;
+
 
           facade_->loadDataflow(pattern_graph_ptr_);
 
-          DefaultComponentPtr source = facade_->getComponent("source");
-          auto app_source = std::dynamic_pointer_cast<SourceType >(source);
-          sources_.emplace_back(app_source);
+          sources_.emplace_back(std::dynamic_pointer_cast<SourceType >(facade_->getComponent("source")));
           sources_.emplace_back(std::dynamic_pointer_cast<SourceType >(facade_->getComponent("source2")));
           sources_.emplace_back(std::dynamic_pointer_cast<SourceType >(facade_->getComponent("source3")));
 
           DefaultComponentPtr sink = facade_->getComponent("sink");
-          sink_ = std::dynamic_pointer_cast<traact::component::facade::ApplicationSyncSink<spatial::Pose6DHeader> >(sink);
+          sink_.emplace_back(std::dynamic_pointer_cast<traact::component::facade::ApplicationSyncSink<spatial::Pose6DHeader> >(sink));
 
 
           std::shared_ptr<test::DataflowTestComponent>
@@ -181,18 +211,29 @@ traact::test::TraactProblemSolver::prepareProblem(Problem problem, const Problem
           pattern_graph_ptr_->connect("mul2", "output", "mul3", "input1");
           pattern_graph_ptr_->connect("mul3", "output", "sink", "input");
 
+          buffer::TimeDomainManagerConfig td_config;
+          td_config.time_domain = 0;
+          td_config.ringbuffer_size = 30;
+          td_config.master_source = "source";
+          td_config.source_mode = SourceMode::WaitForBuffer;
+          td_config.missing_source_event_mode = MissingSourceEventMode::WaitForEvent;
+          td_config.max_offset = std::chrono::milliseconds(1);
+          td_config.max_delay = std::chrono::milliseconds(100);
+          td_config.measurement_delta = std::chrono::milliseconds(10);
+
+          pattern_graph_ptr_->timedomain_configs[0] = td_config;
+
 
           facade_->loadDataflow(pattern_graph_ptr_);
 
-          DefaultComponentPtr source = facade_->getComponent("source");
-          auto app_source = std::dynamic_pointer_cast<SourceType >(source);
-          sources_.emplace_back(app_source);
+
+          sources_.emplace_back(std::dynamic_pointer_cast<SourceType >(facade_->getComponent("source")));
           sources_.emplace_back(std::dynamic_pointer_cast<SourceType >(facade_->getComponent("source2")));
           sources_.emplace_back(std::dynamic_pointer_cast<SourceType >(facade_->getComponent("source3")));
           sources_.emplace_back(std::dynamic_pointer_cast<SourceType >(facade_->getComponent("source4")));
 
           DefaultComponentPtr sink = facade_->getComponent("sink");
-          sink_ = std::dynamic_pointer_cast<traact::component::facade::ApplicationSyncSink<spatial::Pose6DHeader> >(sink);
+          sink_.emplace_back(std::dynamic_pointer_cast<traact::component::facade::ApplicationSyncSink<spatial::Pose6DHeader> >(sink));
 
 
           std::shared_ptr<test::DataflowTestComponent>
@@ -215,8 +256,8 @@ traact::test::TraactProblemSolver::prepareProblem(Problem problem, const Problem
 
 }
 
-void traact::test::TraactProblemSolver::setSinkCallback(const traact::test::ProblemSolver::Callback &callback) {
-  sink_->SetCallback(callback);
+void traact::test::TraactProblemSolver::setSinkCallback(std::size_t idx, const DataCallback &callback) {
+  sink_[idx]->SetCallback(callback);
 }
 void traact::test::TraactProblemSolver::start() {
   facade_->start();
@@ -229,4 +270,20 @@ void traact::test::TraactProblemSolver::stop() {
 
 void traact::test::TraactProblemSolver::setSourceCallback(size_t index, traact::test::TestSource *source) {
   source->SetCallback(std::bind(&SourceType::newValue, sources_[index], std::placeholders::_1, std::placeholders::_2));
+}
+
+void traact::test::TraactProblemSolver::setInvalidCallback(std::size_t idx,
+                                                           const traact::test::ProblemSolver::CancelCallback &callback) {
+    //invalid_callbacks_[idx] = callback;
+    sink_[idx]->SetInvalidCallback(std::bind(callback, std::placeholders::_1));
+    //sink_[idx]->SetInvalidCallback(std::bind(&TraactProblemSolver::invalid_callback, this, std::placeholders::_1, std::placeholders::_2, idx));
+}
+
+void traact::test::TraactProblemSolver::invalid_callback(traact::TimestampType ts, std::size_t mea_idx,
+                                                         std::size_t sink_idx) {
+    invalid_callbacks_[sink_idx](ts);
+}
+
+traact::test::TraactProblemSolver::TraactProblemSolver() {
+
 }

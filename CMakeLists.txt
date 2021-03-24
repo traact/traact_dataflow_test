@@ -57,7 +57,7 @@ set(DATAFLOW_TEST_SOURCES
         src/source/ProblemTester.h
         src/source/ProblemSolver.h
         src/traact/TraactProblemSolver.cpp
-        src/traact/TraactProblemSolver.h src/test_cases/BasicTestCase.cpp src/test_cases/BasicTestCase.h src/test_cases/SyncSourceTestCase.cpp src/test_cases/SyncSourceTestCase.h src/test_cases/AsyncSourceTestCase.cpp src/test_cases/AsyncSourceTestCase.h src/test_sync_source.cpp src/test_async_source.cpp)
+        src/traact/TraactProblemSolver.h src/test_cases/BasicTestCase.cpp src/test_cases/BasicTestCase.h src/test_cases/SyncSourceTestCase.cpp src/test_cases/SyncSourceTestCase.h src/test_cases/SyncSourceMissingEventsTestCase.cpp src/test_cases/SyncSourceMissingEventsTestCase.h src/test_noWait_source.cpp src/test_simulateTimings_source.cpp)
 
 add_executable(dataflow_test ${DATAFLOW_TEST_SOURCES})
 

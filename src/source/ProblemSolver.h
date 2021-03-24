@@ -39,13 +39,15 @@ namespace traact::test {
 class ProblemSolver {
  public:
   typedef typename std::shared_ptr<ProblemSolver> Ptr;
-  typedef typename std::function<void(TimestampType, Eigen::Affine3d)> Callback;
+  typedef typename std::function<void(TimestampType, Eigen::Affine3d)> DataCallback;
+    typedef typename std::function<void(TimestampType)> CancelCallback;
   virtual ~ProblemSolver() = default;
 
   virtual void prepareProblem(Problem problem, const ProblemConfiguration &problem_configuration) =0;
 
-  virtual void setSinkCallback(const Callback& callback) = 0;
-  virtual void setSourceCallback(size_t iundex, TestSource* source) = 0;
+  virtual void setSinkCallback(std::size_t idx, const DataCallback &callback) = 0;
+  virtual void setInvalidCallback(std::size_t idx, const CancelCallback &callback) = 0;
+  virtual void setSourceCallback(size_t idx, TestSource* source) = 0;
 
   virtual void start() = 0;
 

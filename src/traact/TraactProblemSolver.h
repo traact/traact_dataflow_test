@@ -44,10 +44,16 @@ class TraactProblemSolver : public ProblemSolver{
   typedef typename traact::component::facade::ApplicationAsyncSource<spatial::Pose6DHeader> SourceType;
   typedef typename std::shared_ptr<component::facade::ApplicationSyncSink<spatial::Pose6DHeader> > SinkPtr;
   typedef typename std::shared_ptr<component::facade::ApplicationAsyncSource<spatial::Pose6DHeader> > SourcePtr;
-  void prepareProblem(Problem problem, const ProblemConfiguration &problem_configuration) override;
 
-  void setSinkCallback(const ProblemSolver::Callback &callback) override;
-  void setSourceCallback(size_t index, TestSource *source) override;
+    TraactProblemSolver();
+
+    void prepareProblem(Problem problem, const ProblemConfiguration &problem_configuration) override;
+
+  void setSinkCallback(std::size_t idx, const DataCallback &callback) override;
+
+    void setInvalidCallback(std::size_t idx, const CancelCallback &callback) override;
+
+    void setSourceCallback(size_t index, TestSource *source) override;
   void start() override;
   void stop() override;
 
@@ -56,8 +62,11 @@ class TraactProblemSolver : public ProblemSolver{
 
   std::shared_ptr<facade::Facade> facade_;
 
-  SinkPtr sink_;
+  std::vector<SinkPtr> sink_;
   std::vector<SourcePtr > sources_;
+  std::vector<traact::test::ProblemSolver::CancelCallback> invalid_callbacks_;
+
+  void invalid_callback(TimestampType ts, std::size_t mea_idx, std::size_t sink_idx);
 
 };
 }

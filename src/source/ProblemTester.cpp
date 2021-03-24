@@ -41,15 +41,22 @@ traact::test::ProblemTester::ProblemTester(const traact::test::ProblemSolver::Pt
 
 bool traact::test::ProblemTester::test() {
 
+    TimeDurationType thread_start_offset = std::chrono::seconds(1);
+    bool simulate_sensor = test_case_->GetSourceConfigurations()[0].sleep;
 
     const std::vector<std::tuple<TimestampType,bool, Eigen::Affine3d> >& expected_results = test_case_->GetExpectedResults();
 
     size_t expected_count = expected_results.size();
     solver_->prepareProblem(test_case_->GetProblem(), test_case_->GetProblemConfiguration());
 
+
     const std::vector<traact::test::SourceConfiguration>& source_configs = test_case_->GetSourceConfigurations();
 
+
+
     std::vector<std::shared_ptr<TestSource> > source_threads;
+
+    std::size_t master_idx = 0;
 
     for (int source_index = 0; source_index < source_configs.size(); ++source_index) {
         auto source_thread = std::make_shared<TestSource>(source_configs[source_index]);
@@ -59,10 +66,12 @@ bool traact::test::ProblemTester::test() {
 
 
     TestSink test_sink(expected_count);
-    auto receiveCallback = std::bind(&TestSink::recieveInput, &test_sink, std::placeholders::_1, std::placeholders::_2);
-    solver_->setSinkCallback(receiveCallback);
+    auto receiveCallback = std::bind(&TestSink::receiveInput, &test_sink, std::placeholders::_1, std::placeholders::_2);
+    auto invalidCallback = std::bind(&TestSink::invalidTimestamp, &test_sink, std::placeholders::_1);
+    solver_->setSinkCallback(0, receiveCallback);
+    solver_->setInvalidCallback(0, invalidCallback);
 
-    TimestampType real_ts_source_start = now() + std::chrono::seconds(1);
+    TimestampType real_ts_source_start = now() + thread_start_offset;
     util::PerformanceMonitor monitor("Problem: " + std::to_string((int)test_case_->GetProblem()));
     {
         MEASURE_TIME(monitor, 0, "network start")
@@ -82,16 +91,42 @@ bool traact::test::ProblemTester::test() {
 
     }
 
+
     {
-        MEASURE_TIME(monitor, 2, "finish and wait for network stop")
+        MEASURE_TIME(monitor, 2, "finish and wait for network Stop")
         solver_->stop();
     }
 
+    if(simulate_sensor){
+        spdlog::info("Remove {0} nanoseconds from source time, threads wait to have a somewhat simultaneous start", thread_start_offset.count());
+    }
     spdlog::info(monitor.toString());
+    using nanoToMilliseconds = std::chrono::duration<float, std::micro>;
+
+
+
     const auto &received_results = test_sink.data_;
+    const auto &received_invalid = test_sink.invalid_data_;
+    std::size_t expected_valid_results = 0;
+    std::size_t expected_invalid_results = 0;
 
-    spdlog::info("received {0} of {1} results", received_results.size(), expected_results.size());
-
+    for(const auto& exp : expected_results){
+        if(std::get<1>(exp)){
+            expected_valid_results++;
+        }else {
+            expected_invalid_results++;
+        }
+    }
+    spdlog::info("Received Events: Valid Results: {0} of {1}, Invalid Results {2} of {3} ", received_results.size(), expected_valid_results, received_invalid.size(), expected_invalid_results);
+    bool allOK = true;
+    if(received_results.size() != expected_valid_results){
+        spdlog::error("incorrect number of valid results");
+        allOK = false;
+    }
+    if(received_invalid.size() < expected_invalid_results){
+        spdlog::error("smaller number of invalid results");
+        allOK = false;
+    }
     spdlog::info("check for order of received results");
     std::map<TimestampType, Eigen::Affine3d> timestamp_to_result;
     std::map<TimestampType, TimestampType> timestamp_to_send;
@@ -108,6 +143,7 @@ bool traact::test::ProblemTester::test() {
             if (received_ts < ts) {
                 spdlog::error("current {0} < previous {1} ", received_ts.time_since_epoch().count(),
                               ts.time_since_epoch().count());
+                allOK = false;
             }
 
             ts = received_ts;
@@ -117,13 +153,13 @@ bool traact::test::ProblemTester::test() {
         }
 
 
-        for (const auto &item : source_threads[0]->data_) {
+        for (const auto &item : source_threads[master_idx]->data_) {
             timestamp_to_send[item.first] = item.second;
         }
     }
 
     spdlog::info("check for correct results");
-    bool allOK = true;
+
     for (const auto &expected : expected_results) {
         auto expected_ts = std::get<0>(expected);
         auto expected_valid = std::get<1>(expected);
@@ -140,16 +176,21 @@ bool traact::test::ProblemTester::test() {
             continue;
         }
 
-        Eigen::Affine3d result = find_it->second;
-        if (!result.isApprox(expected_value)) {
-            Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
-            std::stringstream ss_expected, ss_result;
-            ss_expected << expected_value.matrix().format(CleanFmt);
-            ss_result << result.matrix().format(CleanFmt);
-            allOK = false;
-            spdlog::error("result differs for ts {2}, expected: \n {0} \n result:\n {1}", ss_expected.str(),
-                          ss_result.str(), expected_ts.time_since_epoch().count());
+        if(expected_valid) {
+            Eigen::Affine3d result = find_it->second;
+            if (!result.isApprox(expected_value)) {
+                Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
+                std::stringstream ss_expected, ss_result;
+                ss_expected << expected_value.matrix().format(CleanFmt);
+                ss_result << result.matrix().format(CleanFmt);
+                allOK = false;
+                spdlog::error("result differs for ts {2}, expected: \n {0} \n result:\n {1}", ss_expected.str(),
+                              ss_result.str(), expected_ts.time_since_epoch().count());
+            }
+        } else {
+            // no result for invalid timestamp, all good
         }
+
 
     }
 
@@ -158,17 +199,26 @@ bool traact::test::ProblemTester::test() {
 
     spdlog::info("calculate delay of {0} results: ", timestamp_to_receive.size());
     if (!timestamp_to_receive.empty()) {
-        size_t result_count = 0;
         TimeDurationType total_delay = TimeDurationType::min();
 
         for (const auto &receive_ts : timestamp_to_receive) {
             TimestampType sendTime = timestamp_to_send[receive_ts.first];
-            total_delay += (receive_ts.second - sendTime);
-            result_count++;
+            auto ts_diff = receive_ts.second - sendTime;
+            total_delay += ts_diff;
         }
-        using nanoToMilliseconds = std::chrono::duration<float, std::milli>;
-        using nanoToSeconds = std::chrono::duration<float>;
-        spdlog::info("average delay: {0}ns", total_delay.count() / result_count);
+
+
+        auto total_micro = nanoToMilliseconds (total_delay);
+        TimeDurationType total_time;
+        if(simulate_sensor)
+            total_time = monitor.getTotalTime() - thread_start_offset;
+        else
+            total_time = monitor.getTotalTime();
+        auto avg_per_mea = nanoToMilliseconds (total_time / (received_results.size()+received_invalid.size()));
+        spdlog::info("average delay: {0} micro seconds", total_micro.count() / timestamp_to_receive.size());
+        spdlog::info("average time per measurement: {0} micro seconds", avg_per_mea.count());
+        double fps = std::chrono::seconds(1) / avg_per_mea;
+        spdlog::info("measurements per second: {0}",  fps);
     }
 
     return allOK;

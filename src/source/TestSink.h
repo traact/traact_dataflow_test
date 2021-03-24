@@ -34,22 +34,25 @@
 
 #include <Eigen/Geometry>
 #include <traact/datatypes.h>
-#include <spdlog/spdlog.h>
+#include <traact/util/Logging.h>
 //#include <boost/progress.hpp>
 namespace traact::test {
 class TestSink {
  public:
   TestSink(size_t expected_count){
     data_.reserve(expected_count);
+      invalid_data_.reserve(expected_count);
   }
-  void recieveInput(TimestampType ts,const Eigen::Affine3d & data){
-
+  void receiveInput(TimestampType ts, const Eigen::Affine3d & data){
     data_.emplace_back(ts, data, now());
-    //++progressDisplay;
+  }
+
+  void invalidTimestamp(TimestampType ts) {
+      invalid_data_.emplace_back(ts, now());
   }
 
   std::vector<std::tuple<TimestampType , Eigen::Affine3d, TimestampType> > data_;
-  //boost::progress_display progressDisplay;
+  std::vector<std::tuple<TimestampType , TimestampType> > invalid_data_;
 
 };
 }

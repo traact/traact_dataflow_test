@@ -35,7 +35,7 @@ void traact::test::TestSource::threadLoop() {
     using namespace traact::spatial;
     using namespace traact;
 
-    // init runtime parameter
+    // Init runtime parameter
     data_.reserve(source_configuration_.num_events);
     size_t output_count = 0;
 
@@ -53,19 +53,20 @@ void traact::test::TestSource::threadLoop() {
                     std::this_thread::sleep_for( time_diff - std::chrono::milliseconds(1));
                 } else {
                     std::this_thread::yield();
-                    current_real_ts = now();
                 }
-
+                current_real_ts = now();
             }
         }
 
 
         TimestampType ts = expected_source_.timestamps[output_count];
+        auto pose = expected_source_.getPose(ts);
         data_.emplace_back(std::make_pair(ts, now()));
-        callback_(ts, expected_source_.getPose(ts));
+        callback_(ts, pose);
 
-        next_real_ts = next_real_ts + source_configuration_.getTimeDelayForIndex(output_count);
+        next_real_ts = next_real_ts + source_configuration_.time_delta+ source_configuration_.getTimeDelayForIndex(output_count);
         output_count++;
+
 
     }
     spdlog::trace("source quit loop");

@@ -46,6 +46,7 @@ namespace traact::test {
 class TestSource {
  public:
   typedef typename std::function<void(TimestampType, Eigen::Affine3d)> Callback;
+
   explicit TestSource(SourceConfiguration  config) : source_configuration_(config), expected_source_(config)  {
     running_ = false;
     callback_ = nullptr;
@@ -77,12 +78,15 @@ class TestSource {
   void SetCallback(const Callback &callback) {
     callback_ = callback;
   }
+
  private:
   SourceConfiguration source_configuration_;
   ExpectedSource expected_source_;
   std::shared_ptr<std::thread> thread_;
   bool running_;
   Callback callback_;
+
+
   TimestampType real_ts_start_;
 
   void threadLoop();

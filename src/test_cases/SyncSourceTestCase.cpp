@@ -37,6 +37,9 @@ traact::test::SyncSourceTestCase::SyncSourceTestCase(traact::test::Problem probl
     TimeDurationType deltaTime(std::chrono::milliseconds(10));
     std::vector<TimeDurationType> delays;
     size_t num_events = 1000;
+    if(!simulate_sensors){
+        num_events = 10000;
+    }
 
     problem_configuration_.sleep = false;
     //problem_configuration_.expected_input_time_delta = std::chrono::milliseconds (10);
