@@ -37,6 +37,7 @@
 
 #include <utility>
 #include "BaseProblem.h"
+#include <thread>
 
 namespace traact::test {
 

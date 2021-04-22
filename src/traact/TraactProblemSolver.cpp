@@ -32,9 +32,10 @@
 #include "TraactProblemSolver.h"
 #include "../../src_traact_plugin/TraactDataflowTestPlugin.h"
 #include <traact/util/Logging.h>
+#include <traact/facade/DefaultFacade.h>
 void
 traact::test::TraactProblemSolver::prepareProblem(Problem problem, const ProblemConfiguration &problem_configuration) {
-  facade_ = std::make_shared<facade::Facade>();
+  facade_ = std::make_shared<facade::DefaultFacade>();
   sink_.clear();
   sources_.clear();
 
@@ -52,7 +53,7 @@ traact::test::TraactProblemSolver::prepareProblem(Problem problem, const Problem
 
         buffer::TimeDomainManagerConfig td_config;
         td_config.time_domain = 0;
-        td_config.ringbuffer_size = 30;
+        td_config.ringbuffer_size = 3;
         td_config.master_source = "source";
         td_config.source_mode = SourceMode::WaitForBuffer;
         td_config.missing_source_event_mode = MissingSourceEventMode::WaitForEvent;
@@ -90,7 +91,7 @@ traact::test::TraactProblemSolver::prepareProblem(Problem problem, const Problem
 
       buffer::TimeDomainManagerConfig td_config;
       td_config.time_domain = 0;
-      td_config.ringbuffer_size = 30;
+      td_config.ringbuffer_size = 3;
       td_config.master_source = "source";
       td_config.source_mode = SourceMode::WaitForBuffer;
       td_config.missing_source_event_mode = MissingSourceEventMode::WaitForEvent;
@@ -143,7 +144,7 @@ traact::test::TraactProblemSolver::prepareProblem(Problem problem, const Problem
 
           buffer::TimeDomainManagerConfig td_config;
           td_config.time_domain = 0;
-          td_config.ringbuffer_size = 30;
+          td_config.ringbuffer_size = 3;
           td_config.master_source = "source";
           td_config.source_mode = SourceMode::WaitForBuffer;
           td_config.missing_source_event_mode = MissingSourceEventMode::WaitForEvent;
@@ -213,7 +214,7 @@ traact::test::TraactProblemSolver::prepareProblem(Problem problem, const Problem
 
           buffer::TimeDomainManagerConfig td_config;
           td_config.time_domain = 0;
-          td_config.ringbuffer_size = 30;
+          td_config.ringbuffer_size = 3;
           td_config.master_source = "source";
           td_config.source_mode = SourceMode::WaitForBuffer;
           td_config.missing_source_event_mode = MissingSourceEventMode::WaitForEvent;

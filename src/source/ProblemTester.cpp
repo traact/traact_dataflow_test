@@ -129,8 +129,9 @@ bool traact::test::ProblemTester::test() {
     }
     spdlog::info("check for order of received results");
     std::map<TimestampType, Eigen::Affine3d> timestamp_to_result;
-    std::map<TimestampType, TimestampType> timestamp_to_send;
+    std::vector<std::map<TimestampType, TimestampType> > source_timestamp_to_send;
     std::map<TimestampType, TimestampType> timestamp_to_receive;
+    source_timestamp_to_send.resize(source_threads.size());
     if (received_results.size() > 1) {
         // store first
         TimestampType ts = std::get<0>(received_results[0]);
@@ -153,9 +154,12 @@ bool traact::test::ProblemTester::test() {
         }
 
 
-        for (const auto &item : source_threads[master_idx]->data_) {
-            timestamp_to_send[item.first] = item.second;
+        for(std::size_t source_idx = 0; source_idx < source_threads.size();++source_idx){
+            for (const auto &item : source_threads[source_idx]->data_) {
+                source_timestamp_to_send[source_idx][item.first] = item.second;
+            }
         }
+
     }
 
     spdlog::info("check for correct results");
@@ -199,26 +203,35 @@ bool traact::test::ProblemTester::test() {
 
     spdlog::info("calculate delay of {0} results: ", timestamp_to_receive.size());
     if (!timestamp_to_receive.empty()) {
-        TimeDurationType total_delay = TimeDurationType::min();
-
-        for (const auto &receive_ts : timestamp_to_receive) {
-            TimestampType sendTime = timestamp_to_send[receive_ts.first];
-            auto ts_diff = receive_ts.second - sendTime;
-            total_delay += ts_diff;
-        }
 
 
-        auto total_micro = nanoToMilliseconds (total_delay);
         TimeDurationType total_time;
         if(simulate_sensor)
             total_time = monitor.getTotalTime() - thread_start_offset;
         else
             total_time = monitor.getTotalTime();
         auto avg_per_mea = nanoToMilliseconds (total_time / (received_results.size()+received_invalid.size()));
-        spdlog::info("average delay: {0} micro seconds", total_micro.count() / timestamp_to_receive.size());
         spdlog::info("average time per measurement: {0} micro seconds", avg_per_mea.count());
         double fps = std::chrono::seconds(1) / avg_per_mea;
         spdlog::info("measurements per second: {0}",  fps);
+
+        for(std::size_t source_idx = 0; source_idx < source_threads.size();++source_idx){
+
+            TimeDurationType total_delay = TimeDurationType::min();
+
+            for (const auto &receive_ts : timestamp_to_receive) {
+                TimestampType sendTime = source_timestamp_to_send[source_idx][receive_ts.first];
+                auto ts_diff = receive_ts.second - sendTime;
+                total_delay += ts_diff;
+            }
+
+            auto total_micro = nanoToMilliseconds (total_delay);
+            spdlog::info("average delay source idx {0}: {1} micro seconds",source_idx, total_micro.count() / timestamp_to_receive.size());
+
+
+        }
+
+
     }
 
     return allOK;

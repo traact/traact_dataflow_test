@@ -66,7 +66,7 @@ namespace traact::test {
                     pattern;
         };
 
-        bool processTimePoint(buffer::GenericComponentBuffer &data) override{
+        bool processTimePoint(buffer::ComponentBuffer &data) override{
             const auto ts = data.getTimestamp();
             const auto &input0 = data.getInput<Eigen::Affine3d, traact::spatial::Pose6DHeader>(0);
             const auto &input1 = data.getInput<Eigen::Affine3d, traact::spatial::Pose6DHeader>(1);

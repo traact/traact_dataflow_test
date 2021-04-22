@@ -30,14 +30,12 @@ class Traact(ConanFile):
     def requirements(self):        
         self.requires("traact_run_env/%s@camposs/stable" % self.version)
         self.requires("traact_core/%s@camposs/stable" % self.version)
-        self.requires("traact_facade/%s@camposs/stable" % self.version)
         self.requires("traact_spatial/%s@camposs/stable" % self.version)
         self.requires("gtest/1.10.0")
 
 
     def configure(self):
         self.options['traact_core'].shared = self.options.shared
-        self.options['traact_facade'].shared = self.options.shared
         self.options['traact_spatial'].shared = self.options.shared
 
 
