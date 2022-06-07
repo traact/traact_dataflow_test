@@ -14,7 +14,7 @@ int main(int argc, char **argv) {
 //    catch (const spdlog::spdlog_ex &ex) {
 //        std::cout << "Log initialization failed: " << ex.what() << std::endl;
 //    }
-    traact::util::init_logging(spdlog::level::trace, false, "");
+    traact::util::initLogging(spdlog::level::trace, "");
 
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

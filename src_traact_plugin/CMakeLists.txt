@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.16)
 
 
-set(PLUGIN_SOURCES TraactDataflowTestPlugin.cpp TraactDataflowTestPlugin.h)
+set(PLUGIN_SOURCES ../src/traact/TraactDataflowTestPlugin.cpp ../src/traact/TraactDataflowTestPlugin.h)
 
 
 add_library(traact_dataflowtest_plugin SHARED
-        ${PLUGIN_SOURCES}        
+        ${PLUGIN_SOURCES}
         )
 
 conan_target_link_libraries(traact_dataflowtest_plugin)
@@ -13,11 +13,9 @@ conan_target_link_libraries(traact_dataflowtest_plugin)
 # don't set version number so that (linux) only one file exists
 #set_target_properties(traact_dataflowtest_plugin PROPERTIES VERSION ${CONAN_PACKAGE_VERSION})
 
-target_include_directories(traact_dataflowtest_plugin PUBLIC
-        $<INSTALL_INTERFACE:include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
 target_include_directories(traact_dataflowtest_plugin PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src_traact_plugin
+        ${CMAKE_BINARY_DIR}
         )
 
 IF (NOT WIN32)
