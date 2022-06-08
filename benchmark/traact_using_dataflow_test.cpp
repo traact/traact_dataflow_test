@@ -1,8 +1,4 @@
-/**
- *   Copyright (C) 2022  Frieder Pankratz <frieder.pankratz@gmail.com>
- *
- *   License in root folder
-**/
+/** Copyright (C) 2022  Frieder Pankratz <frieder.pankratz@gmail.com> **/
 #include <benchmark/benchmark.h>
 #include <dataflow_use_case_test/UseCaseFactory.h>
 #include <dataflow_use_case_test/source_strategy/AllEvents_PerfectTimestamps.h>
