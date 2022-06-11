@@ -6,8 +6,8 @@
 #include <dataflow_use_case_test/DataflowNetwork.h>
 #include <traact/traact.h>
 #include <traact/facade/Facade.h>
-#include <traact/component/facade/ApplicationSyncSink.h>
-#include <traact/component/facade/ApplicationAsyncSource.h>
+#include <traact/component/generic/ApplicationSyncSink.h>
+#include <traact/component/generic/ApplicationAsyncSource.h>
 #include <traact/spatial.h>
 
 namespace traact::test {

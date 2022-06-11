@@ -1,7 +1,7 @@
 /** Copyright (C) 2022  Frieder Pankratz <frieder.pankratz@gmail.com> **/
 
-#ifndef TRAACTMULTI_TRAACTDATAFLOWTESTPLUGIN_H
-#define TRAACTMULTI_TRAACTDATAFLOWTESTPLUGIN_H
+#ifndef TRAACT_DATAFLOW_TEST_SRC_TRAACT_TRAACTDATAFLOWTESTPLUGIN_H_
+#define TRAACT_DATAFLOW_TEST_SRC_TRAACT_TRAACTDATAFLOWTESTPLUGIN_H_
 
 #include <traact/spatial.h>
 #include <traact/pattern/Pattern.h>
@@ -13,13 +13,12 @@ namespace traact::test {
 
 class DataflowTestComponent : public component::Component {
  public:
-    explicit DataflowTestComponent(const std::string &name) : Component(name,
-                                                                        component::ComponentType::SYNC_FUNCTIONAL) {}
+    explicit DataflowTestComponent(const std::string &name) : Component(name) {}
 
-    pattern::Pattern::Ptr GetPattern() const {
+    static pattern::Pattern::Ptr GetPattern(){
         using namespace traact::spatial;
         pattern::Pattern::Ptr
-            pattern = std::make_shared<pattern::Pattern>("DataflowTestComponent", traact::Concurrency::UNLIMITED);
+            pattern = std::make_shared<pattern::Pattern>("DataflowTestComponent", traact::Concurrency::UNLIMITED,component::ComponentType::SYNC_FUNCTIONAL);
 
         pattern->addConsumerPort("input0", Pose6DHeader::MetaType)
             .addConsumerPort("input1", Pose6DHeader::MetaType)
@@ -48,9 +47,7 @@ class DataflowTestComponent : public component::Component {
     }
 
     std::shared_ptr<dataflow_use_case_test::BaseProblem> base_problem_;
-
- RTTR_ENABLE(component::Component);
 };
 
 }
-#endif //TRAACTMULTI_TRAACTDATAFLOWTESTPLUGIN_H
+#endif //TRAACT_DATAFLOW_TEST_SRC_TRAACT_TRAACTDATAFLOWTESTPLUGIN_H_

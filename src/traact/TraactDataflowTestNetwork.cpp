@@ -51,7 +51,7 @@ void TraactDataflowTestNetwork::Init(dataflow_use_case_test::UseCaseProblem prob
 
             sources_.emplace_back(std::dynamic_pointer_cast<SourceType>(facade_->getComponent("source")));
 
-            DefaultComponentPtr sink = facade_->getComponent("sink");
+            component::Component::Ptr sink = facade_->getComponent("sink");
             sink_.emplace_back(std::dynamic_pointer_cast<traact::component::facade::ApplicationSyncSink<spatial::Pose6DHeader> >(
                 sink));
             sink_[0]->setCallback(std::bind(&TraactDataflowTestNetwork::SendValid,
@@ -95,7 +95,7 @@ void TraactDataflowTestNetwork::Init(dataflow_use_case_test::UseCaseProblem prob
             sources_.emplace_back(std::dynamic_pointer_cast<SourceType>(facade_->getComponent("source")));
             sources_.emplace_back(std::dynamic_pointer_cast<SourceType>(facade_->getComponent("source2")));
 
-            DefaultComponentPtr sink = facade_->getComponent("sink");
+            component::Component::Ptr sink = facade_->getComponent("sink");
             sink_.emplace_back(std::dynamic_pointer_cast<traact::component::facade::ApplicationSyncSink<spatial::Pose6DHeader> >(
                 sink));
             sink_[0]->setCallback(std::bind(&TraactDataflowTestNetwork::SendValid,
@@ -153,7 +153,7 @@ void TraactDataflowTestNetwork::Init(dataflow_use_case_test::UseCaseProblem prob
             sources_.emplace_back(std::dynamic_pointer_cast<SourceType>(facade_->getComponent("source2")));
             sources_.emplace_back(std::dynamic_pointer_cast<SourceType>(facade_->getComponent("source3")));
 
-            DefaultComponentPtr sink = facade_->getComponent("sink");
+            component::Component::Ptr sink = facade_->getComponent("sink");
             sink_.emplace_back(std::dynamic_pointer_cast<traact::component::facade::ApplicationSyncSink<spatial::Pose6DHeader> >(
                 sink));
             sink_[0]->setCallback(std::bind(&TraactDataflowTestNetwork::SendValid,
@@ -229,7 +229,7 @@ void TraactDataflowTestNetwork::Init(dataflow_use_case_test::UseCaseProblem prob
             sources_.emplace_back(std::dynamic_pointer_cast<SourceType>(facade_->getComponent("source3")));
             sources_.emplace_back(std::dynamic_pointer_cast<SourceType>(facade_->getComponent("source4")));
 
-            DefaultComponentPtr sink = facade_->getComponent("sink");
+            component::Component::Ptr sink = facade_->getComponent("sink");
             sink_.emplace_back(std::dynamic_pointer_cast<traact::component::facade::ApplicationSyncSink<spatial::Pose6DHeader> >(
                 sink));
             sink_[0]->setCallback(std::bind(&TraactDataflowTestNetwork::SendValid,
@@ -315,7 +315,7 @@ void TraactDataflowTestNetwork::Init(dataflow_use_case_test::UseCaseProblem prob
             sources_.emplace_back(std::dynamic_pointer_cast<SourceType>(facade_->getComponent("source3")));
             sources_.emplace_back(std::dynamic_pointer_cast<SourceType>(facade_->getComponent("source4")));
 
-            DefaultComponentPtr sink0 = facade_->getComponent("sink0");
+            component::Component::Ptr sink0 = facade_->getComponent("sink0");
             sink_.emplace_back(std::dynamic_pointer_cast<traact::component::facade::ApplicationSyncSink<spatial::Pose6DHeader> >(
                 sink0));
             sink_[0]->setCallback(std::bind(&TraactDataflowTestNetwork::SendValid,
@@ -330,7 +330,7 @@ void TraactDataflowTestNetwork::Init(dataflow_use_case_test::UseCaseProblem prob
                                                    0,
                                                    std::placeholders::_1));
 
-            DefaultComponentPtr sink1 = facade_->getComponent("sink1");
+            component::Component::Ptr sink1 = facade_->getComponent("sink1");
             sink_.emplace_back(std::dynamic_pointer_cast<traact::component::facade::ApplicationSyncSink<spatial::Pose6DHeader> >(
                 sink1));
             sink_[1]->setCallback(std::bind(&TraactDataflowTestNetwork::SendValid,
