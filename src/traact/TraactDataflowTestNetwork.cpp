@@ -27,9 +27,9 @@ void TraactDataflowTestNetwork::Init(dataflow_use_case_test::UseCaseProblem prob
     td_config.master_source = "source";
     td_config.source_mode = SourceMode::WAIT_FOR_BUFFER;
     td_config.missing_source_event_mode = MissingSourceEventMode::WAIT_FOR_EVENT;
-    td_config.max_offset = max_ts_offset / 2;
+    td_config.max_offset = max_ts_offset/2 ;
     td_config.max_delay = std::chrono::milliseconds(100);
-    td_config.measurement_delta = std::chrono::milliseconds(10);
+    td_config.sensor_frequency = 100;
 
     pattern_graph_ptr_ = std::make_shared<DefaultInstanceGraph>("test1");
     switch (problem) {
@@ -37,11 +37,11 @@ void TraactDataflowTestNetwork::Init(dataflow_use_case_test::UseCaseProblem prob
             DefaultPatternInstancePtr
                 source_pattern =
                 pattern_graph_ptr_->addPattern("source",
-                                               facade_->instantiatePattern("ApplicationAsyncSource_Eigen::Affine3d"));
+                                               facade_->instantiatePattern("ApplicationAsyncSource_traact::spatial::Pose6D"));
             DefaultPatternInstancePtr
                 sink_pattern =
                 pattern_graph_ptr_->addPattern("sink",
-                                               facade_->instantiatePattern("ApplicationSyncSink_Eigen::Affine3d"));
+                                               facade_->instantiatePattern("ApplicationSyncSink_traact::spatial::Pose6D"));
 
             pattern_graph_ptr_->connect("source", "output", "sink", "input");
 
@@ -71,15 +71,15 @@ void TraactDataflowTestNetwork::Init(dataflow_use_case_test::UseCaseProblem prob
             DefaultPatternInstancePtr
                 source_pattern =
                 pattern_graph_ptr_->addPattern("source",
-                                               facade_->instantiatePattern("ApplicationAsyncSource_Eigen::Affine3d"));
+                                               facade_->instantiatePattern("ApplicationAsyncSource_traact::spatial::Pose6D"));
             DefaultPatternInstancePtr
                 source2_pattern =
                 pattern_graph_ptr_->addPattern("source2",
-                                               facade_->instantiatePattern("ApplicationAsyncSource_Eigen::Affine3d"));
+                                               facade_->instantiatePattern("ApplicationAsyncSource_traact::spatial::Pose6D"));
             DefaultPatternInstancePtr
                 sink_pattern =
                 pattern_graph_ptr_->addPattern("sink",
-                                               facade_->instantiatePattern("ApplicationSyncSink_Eigen::Affine3d"));
+                                               facade_->instantiatePattern("ApplicationSyncSink_traact::spatial::Pose6D"));
             DefaultPatternInstancePtr
                 mul_pattern =
                 pattern_graph_ptr_->addPattern("mul", facade_->instantiatePattern("DataflowTestComponent"));
@@ -119,19 +119,19 @@ void TraactDataflowTestNetwork::Init(dataflow_use_case_test::UseCaseProblem prob
             DefaultPatternInstancePtr
                 source_pattern =
                 pattern_graph_ptr_->addPattern("source",
-                                               facade_->instantiatePattern("ApplicationAsyncSource_Eigen::Affine3d"));
+                                               facade_->instantiatePattern("ApplicationAsyncSource_traact::spatial::Pose6D"));
             DefaultPatternInstancePtr
                 source2_pattern =
                 pattern_graph_ptr_->addPattern("source2",
-                                               facade_->instantiatePattern("ApplicationAsyncSource_Eigen::Affine3d"));
+                                               facade_->instantiatePattern("ApplicationAsyncSource_traact::spatial::Pose6D"));
             DefaultPatternInstancePtr
                 source3_pattern =
                 pattern_graph_ptr_->addPattern("source3",
-                                               facade_->instantiatePattern("ApplicationAsyncSource_Eigen::Affine3d"));
+                                               facade_->instantiatePattern("ApplicationAsyncSource_traact::spatial::Pose6D"));
             DefaultPatternInstancePtr
                 sink_pattern =
                 pattern_graph_ptr_->addPattern("sink",
-                                               facade_->instantiatePattern("ApplicationSyncSink_Eigen::Affine3d"));
+                                               facade_->instantiatePattern("ApplicationSyncSink_traact::spatial::Pose6D"));
             DefaultPatternInstancePtr
                 mul_pattern =
                 pattern_graph_ptr_->addPattern("mul1", facade_->instantiatePattern("DataflowTestComponent"));
@@ -184,23 +184,23 @@ void TraactDataflowTestNetwork::Init(dataflow_use_case_test::UseCaseProblem prob
             DefaultPatternInstancePtr
                 source_pattern =
                 pattern_graph_ptr_->addPattern("source",
-                                               facade_->instantiatePattern("ApplicationAsyncSource_Eigen::Affine3d"));
+                                               facade_->instantiatePattern("ApplicationAsyncSource_traact::spatial::Pose6D"));
             DefaultPatternInstancePtr
                 source2_pattern =
                 pattern_graph_ptr_->addPattern("source2",
-                                               facade_->instantiatePattern("ApplicationAsyncSource_Eigen::Affine3d"));
+                                               facade_->instantiatePattern("ApplicationAsyncSource_traact::spatial::Pose6D"));
             DefaultPatternInstancePtr
                 source3_pattern =
                 pattern_graph_ptr_->addPattern("source3",
-                                               facade_->instantiatePattern("ApplicationAsyncSource_Eigen::Affine3d"));
+                                               facade_->instantiatePattern("ApplicationAsyncSource_traact::spatial::Pose6D"));
             DefaultPatternInstancePtr
                 source4_pattern =
                 pattern_graph_ptr_->addPattern("source4",
-                                               facade_->instantiatePattern("ApplicationAsyncSource_Eigen::Affine3d"));
+                                               facade_->instantiatePattern("ApplicationAsyncSource_traact::spatial::Pose6D"));
             DefaultPatternInstancePtr
                 sink_pattern =
                 pattern_graph_ptr_->addPattern("sink",
-                                               facade_->instantiatePattern("ApplicationSyncSink_Eigen::Affine3d"));
+                                               facade_->instantiatePattern("ApplicationSyncSink_traact::spatial::Pose6D"));
             DefaultPatternInstancePtr
                 mul_pattern =
                 pattern_graph_ptr_->addPattern("mul1", facade_->instantiatePattern("DataflowTestComponent"));
@@ -265,27 +265,27 @@ void TraactDataflowTestNetwork::Init(dataflow_use_case_test::UseCaseProblem prob
             DefaultPatternInstancePtr
                 source_pattern =
                 pattern_graph_ptr_->addPattern("source",
-                                               facade_->instantiatePattern("ApplicationAsyncSource_Eigen::Affine3d"));
+                                               facade_->instantiatePattern("ApplicationAsyncSource_traact::spatial::Pose6D"));
             DefaultPatternInstancePtr
                 source2_pattern =
                 pattern_graph_ptr_->addPattern("source2",
-                                               facade_->instantiatePattern("ApplicationAsyncSource_Eigen::Affine3d"));
+                                               facade_->instantiatePattern("ApplicationAsyncSource_traact::spatial::Pose6D"));
             DefaultPatternInstancePtr
                 source3_pattern =
                 pattern_graph_ptr_->addPattern("source3",
-                                               facade_->instantiatePattern("ApplicationAsyncSource_Eigen::Affine3d"));
+                                               facade_->instantiatePattern("ApplicationAsyncSource_traact::spatial::Pose6D"));
             DefaultPatternInstancePtr
                 source4_pattern =
                 pattern_graph_ptr_->addPattern("source4",
-                                               facade_->instantiatePattern("ApplicationAsyncSource_Eigen::Affine3d"));
+                                               facade_->instantiatePattern("ApplicationAsyncSource_traact::spatial::Pose6D"));
             DefaultPatternInstancePtr
                 sink0_pattern =
                 pattern_graph_ptr_->addPattern("sink0",
-                                               facade_->instantiatePattern("ApplicationSyncSink_Eigen::Affine3d"));
+                                               facade_->instantiatePattern("ApplicationSyncSink_traact::spatial::Pose6D"));
             DefaultPatternInstancePtr
                 sink1_pattern =
                 pattern_graph_ptr_->addPattern("sink1",
-                                               facade_->instantiatePattern("ApplicationSyncSink_Eigen::Affine3d"));
+                                               facade_->instantiatePattern("ApplicationSyncSink_traact::spatial::Pose6D"));
             DefaultPatternInstancePtr
                 mul_pattern =
                 pattern_graph_ptr_->addPattern("mul1", facade_->instantiatePattern("DataflowTestComponent"));
