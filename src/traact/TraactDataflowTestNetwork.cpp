@@ -24,7 +24,7 @@ void TraactDataflowTestNetwork::Init(dataflow_use_case_test::UseCaseProblem prob
     buffer::TimeDomainManagerConfig td_config;
     td_config.time_domain = 0;
     td_config.ringbuffer_size = ringbuffer_size;
-    td_config.master_source = "source";
+
     td_config.source_mode = SourceMode::WAIT_FOR_BUFFER;
     td_config.missing_source_event_mode = MissingSourceEventMode::WAIT_FOR_EVENT;
     td_config.max_offset = max_ts_offset/2 ;
