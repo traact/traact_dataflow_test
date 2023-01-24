@@ -23,5 +23,5 @@ class TraactPackage(ConanFile):
         self.traact_requires("traact_core", "latest")
         self.traact_requires("traact_spatial", "latest")
         self.traact_requires("dataflow_use_case_test", "latest")
-        self.requires("gtest/[>=1.11.0]")
+        self.requires("gtest/cci.20210126")
         self.requires("benchmark/[>=1.6.1]")
